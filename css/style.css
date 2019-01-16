@@ -1,0 +1,121 @@
+body {
+  margin: 0;
+  background-color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(65, 65, 65);
+}
+
+button {
+  font-size: 20px;
+  padding: 12px 15px 12px 15px;
+  background-color: white;
+  border: 1px solid #ddd;
+  cursor: pointer;
+
+}
+
+.card {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  margin-top: 10px;
+  align-self: flex-start;
+}
+.cardIMGContainer {
+  width: 100%;
+  height: auto;
+}
+.cardIMG {
+  width: 100%;
+  height: auto;
+}
+
+
+
+#siteWrap {
+  border: 0px solid green;
+  width: 100%;
+  max-width: 1400px;
+  height: auto;
+  margin: auto;
+  margin-top: 100px;
+}
+
+#header {
+  width: 100%;
+  margin: auto;
+  margin-top: 20px;
+  text-align: center;
+  font-size: 50px;
+}
+
+#searchHeader {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: auto;
+  background-color: white;
+  border: 0px solid red;
+  /* box-shadow:0px 1px 1px #d3d3d3; */
+}
+
+#headerText {
+  width: 100%;
+  text-align: center;
+  font-size: 40px;
+  margin-top: 20px;
+}
+
+#searchContainer {
+  border: 0px solid red;
+  width: 98%;
+  height: 60px;
+  margin: auto;
+  margin-top: 20px;
+}
+
+#input {
+  box-sizing: border-box;
+  width: 100%;
+  margin: auto;
+  margin-top: 0px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  padding: 12px 0px 12px 10px;
+}
+
+#cardContainer {
+  border: 0px solid black;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 95%;
+  height: auto;
+  margin: auto;
+  margin-top: 160px;
+}
+
+#loadMore {
+  border: 0px solid black;
+  width: 100%;
+  height: auto;
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 100px;
+}
+
+@media only screen and (min-width: 500px) {
+  .card {
+    margin: 10px;
+    max-width: 320px;
+  }
+
+  #searchContainer {
+    width: 50%;
+  }
+
+  #cardContainer {
+    width: 100%;
+  }
+}
