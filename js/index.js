@@ -1,4 +1,3 @@
-console.log('hello world');
 let nameSearchUrl = 'https://api.scryfall.com/cards/search?order=released&unique=prints&q=';
 
 let cardContainer = document.getElementById('cardContainer');
@@ -9,39 +8,7 @@ let searchString = '';
 let previousSearchString = '';
 let moreCards = false;
 
-let deBouncedAPIcall = debounced(100, searchMagic);
 
-function cardSearchOld(event) {
-  // console.log(event.type);
-  console.log(event.key);
-  if (searchString.length > 0 && event.key == 'Backspace') {
-    searchString = searchString.slice(0, -1);
-  } else if (event.key == 'Backspace' && searchString.length === 0) {
-    return;
-  } else {
-    searchString += event.key;
-  }
-  if (searchString !== inputField.value) {
-    searchString = inputField.value;
-  }
-  // clean out any spaces before sending off to search
-  searchString = searchString.split(' ').join('');
-  if (searchString.length < 1) {
-    cardContainer.innerHTML = '';
-    loadMoreCards.innerHTML = '';
-    previousSearchString = '';
-    return;
-  }
-  if (previousSearchString == searchString && event.key != 'Enter') {
-    console.log('no string change, no search!');
-    return;
-  }
-  // searchString = nameSearchUrl + searchString;
-  previousSearchString = searchString;
-  if (event.key == 'Enter') {
-    deBouncedAPIcall(searchString, nameSearchUrl)
-  }
-}
 
 function cardSearch(event) {
   console.log(event.key);
@@ -167,21 +134,4 @@ function loadMoreCardsFunc(nextPageString) {
 
 function createLoadMoreButton(jsonData) {
   return `<button id="loadButton" onclick="loadMoreCardsFunc('${jsonData.next_page}')">Load more cards</button>`
-}
-
-
-
-
-// debounce function I pulled off of google
-function debounced(delay, fn) {
-  let timerId;
-  return function (...args) {
-    if (timerId) {
-      clearTimeout(timerId);
-    }
-    timerId = setTimeout(() => {
-      fn(...args);
-      timerId = null;
-    }, delay);
-  }
 }
