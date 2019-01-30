@@ -51,6 +51,8 @@ button {
 
 #searchHeader {
   position: fixed;
+  display: flex;
+  flex-direction: column;
   top: 0;
   width: 100%;
   height: auto;
@@ -64,6 +66,7 @@ button {
   text-align: center;
   font-size: 40px;
   margin-top: 20px;
+  border: 0px solid red;
 }
 
 #searchContainer {
@@ -111,11 +114,23 @@ button {
     max-width: 320px;
   }
 
+  #searchHeader {
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+
+  #headerText {
+    width: auto;
+    margin: 20px;
+  }
+
   #searchContainer {
-    width: 50%;
+    width: 30%;
+    margin-left: 0;
   }
 
   #cardContainer {
     width: 100%;
+    margin-top: 100px;
   }
 }

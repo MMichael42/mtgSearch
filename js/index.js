@@ -21,34 +21,6 @@ function cardSearch(event) {
   }
 }
 
-function getCardHTML(cardData) {
-  let cardImg;
-  let cardHTML = '';
-  // the below code accounts for cards that may have more than one face
-  if (cardData.image_uris == undefined && cardData.card_faces != undefined) {
-    cardData.card_faces.forEach(card => {
-      cardHTML +=
-       `<div class="card">
-          <div class="cardIMGContainer">
-            <img class="cardIMG" id="${card.id}" src="${card.image_uris.normal}" />
-          </div>
-        </div>
-       `
-    });
-  } else {
-    cardImg = cardData.image_uris.normal;
-    cardHTML = 
-      `<div class="card">
-        <div class="cardIMGContainer">
-          <img class="cardIMG" id="${cardData.id}" src="${cardImg}" />
-        </div>
-      </div>
-      `
-  }
-  
-  return cardHTML;
-}
-
 function searchMagic(searchString, APIendpoint) {
   
   console.log(searchString);
@@ -100,13 +72,34 @@ function searchMagic(searchString, APIendpoint) {
     });
 }
 
-
-window.onscroll = function(event) {
-  if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 2) {
-    console.log('bottom of page!');
+function getCardHTML(cardData) {
+  let cardImg;
+  let cardHTML = '';
+  // the below code accounts for cards that may have more than one face
+  if (cardData.image_uris == undefined && cardData.card_faces != undefined) {
+    cardData.card_faces.forEach(card => {
+      // console.log(card);
+      cardHTML +=
+       `<div class="card">
+          <div class="cardIMGContainer">
+            <img class="cardIMG" id="${card.id}" src="${card.image_uris.png}" />
+          </div>
+        </div>
+       `
+    });
+  } else {
+    cardImg = cardData.image_uris.png;
+    cardHTML = 
+      `<div class="card">
+        <div class="cardIMGContainer">
+          <img class="cardIMG" id="${cardData.id}" src="${cardImg}" />
+        </div>
+      </div>
+      `
   }
+  
+  return cardHTML;
 }
-
 
 function loadMoreCardsFunc(nextPageString) {
   console.log('more cards load! : ' + nextPageString);
@@ -134,4 +127,10 @@ function loadMoreCardsFunc(nextPageString) {
 
 function createLoadMoreButton(jsonData) {
   return `<button id="loadButton" onclick="loadMoreCardsFunc('${jsonData.next_page}')">Load more cards</button>`
+}
+
+window.onscroll = function(event) {
+  if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 2) {
+    console.log('bottom of page!');
+  }
 }
