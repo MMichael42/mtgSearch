@@ -10,8 +10,8 @@ button {
   padding: 12px 15px 12px 15px;
   background-color: white;
   border: 1px solid #ddd;
+  border-radius: 3px;
   cursor: pointer;
-
 }
 
 .card {
@@ -28,6 +28,8 @@ button {
 .cardIMG {
   width: 100%;
   height: auto;
+  border-radius: 15px;
+  box-shadow: 5px 5px 10px 2px rgb(182, 182, 182);
 }
 
 
@@ -97,6 +99,23 @@ button {
   height: auto;
   margin: auto;
   margin-top: 160px;
+}
+
+#setList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  border: 0px solid red;
+  width: 100%;
+  margin-top: 30px;
+}
+.set {
+  /* border: 1px solid black; */
+  width: auto;
+  height: auto;
+  flex-grow: 1;
+  margin: 10px;
 }
 
 #loadMore {

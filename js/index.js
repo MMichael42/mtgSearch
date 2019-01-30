@@ -2,6 +2,7 @@ let nameSearchUrl = 'https://api.scryfall.com/cards/search?order=released&unique
 
 let cardContainer = document.getElementById('cardContainer');
 let inputField = document.getElementById('input');
+let setListContainer = document.getElementById('setList');
 let loadMoreCards = document.getElementById('loadMore');
 
 let searchString = '';
@@ -22,7 +23,7 @@ function cardSearch(event) {
 }
 
 function searchMagic(searchString, APIendpoint) {
-  
+  window.scrollTo(0, 0);
   console.log(searchString);
   cardContainer.innerText = 'Loading...';
   loadMoreCards.innerHTML = '';
@@ -57,16 +58,9 @@ function searchMagic(searchString, APIendpoint) {
       console.log('card loop...');
       console.log('searchString = ' + searchString);
       console.log('currentInput = ' + inputField.value.split(' ').join('%20'));
-      json.data.forEach(card => {
-        let ele = getCardHTML(card);
-        cardContainer.innerHTML += ele;
-      })
 
-      if (json.has_more) {
-        loadMoreCards.innerHTML = createLoadMoreButton(json);
-      } else {
-        loadMoreCards.innerHTML = '';
-      }
+      buildCardList(json);
+
     }).catch(err => {
       console.log(err);
     });
@@ -82,13 +76,13 @@ function getCardHTML(cardData) {
       cardHTML +=
        `<div class="card">
           <div class="cardIMGContainer">
-            <img class="cardIMG" id="${card.id}" src="${card.image_uris.png}" />
+            <img class="cardIMG" id="${card.id}" src="${card.image_uris.normal}" />
           </div>
         </div>
        `
     });
   } else {
-    cardImg = cardData.image_uris.png;
+    cardImg = cardData.image_uris.normal;
     cardHTML = 
       `<div class="card">
         <div class="cardIMGContainer">
@@ -127,6 +121,71 @@ function loadMoreCardsFunc(nextPageString) {
 
 function createLoadMoreButton(jsonData) {
   return `<button id="loadButton" onclick="loadMoreCardsFunc('${jsonData.next_page}')">Load more cards</button>`
+}
+
+function getSetList() {
+  return fetch('https://api.scryfall.com/sets')
+    .then(res => {
+      return res.json()
+    })
+    .then(json => {
+      // console.log(json.data);
+      return json.data.reverse();
+    })
+}
+
+window.onload = function(event) {
+  console.log('hello world');
+  getSetList().then( sets => {
+    console.log(sets);
+    let setList = '';
+    sets.forEach( set => {
+      // console.log(set.released_at);
+      setList += `
+        <button class="set" onclick="loadSet('${set.code}')">${set.name}</button>
+      `
+    })
+    setListContainer.innerHTML = setList;
+  })
+}
+
+function loadSet(setCode) {
+  console.log(setCode);
+  window.scrollTo(0, 0);
+  cardContainer.innerHTML = "Loading...";
+  fetch('https://api.scryfall.com/sets/' + setCode)
+    .then(res => {
+      return res.json()
+    })
+    .then(json => {
+      console.log(json);
+      getSetJson(json.search_uri);
+    })
+}
+
+function getSetJson(url) {
+  fetch(url)
+    .then(res => {
+      return res.json();
+    })
+    .then(json => {
+      buildCardList(json);
+    });
+}
+
+function buildCardList(json) {
+  cardContainer.innerHTML = '';
+
+  json.data.forEach(card => {
+    let ele = getCardHTML(card);
+    cardContainer.innerHTML += ele;
+  })
+
+  if (json.has_more) {
+    loadMoreCards.innerHTML = createLoadMoreButton(json);
+  } else {
+    loadMoreCards.innerHTML = '';
+  }
 }
 
 window.onscroll = function(event) {
