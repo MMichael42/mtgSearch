@@ -27,6 +27,7 @@ function searchMagic(searchString, APIendpoint) {
   console.log(searchString);
   cardContainer.innerText = 'Loading...';
   loadMoreCards.innerHTML = '';
+
   fetch(APIendpoint + searchString)
     .then(res => {
       if (searchString != inputField.value.split(' ').join('%20')) {
@@ -131,22 +132,9 @@ function getSetList() {
     .then(json => {
       // console.log(json.data);
       return json.data.reverse();
-    })
-}
-
-window.onload = function(event) {
-  console.log('hello world');
-  getSetList().then( sets => {
-    console.log(sets);
-    let setList = '';
-    sets.forEach( set => {
-      // console.log(set.released_at);
-      setList += `
-        <button class="set" onclick="loadSet('${set.code}')">${set.name}</button>
-      `
-    })
-    setListContainer.innerHTML = setList;
-  })
+    }).catch(err => {
+      console.log(err);
+    });
 }
 
 function loadSet(setCode) {
@@ -186,6 +174,21 @@ function buildCardList(json) {
   } else {
     loadMoreCards.innerHTML = '';
   }
+}
+
+window.onload = function(event) {
+  console.log('hello world');
+  getSetList().then( sets => {
+    console.log(sets);
+    let setList = '';
+    sets.forEach( set => {
+      // currentSetYear = parseInt(set.released_at.substring(0, 4));
+      setList += `
+        <button class="set" onclick="loadSet('${set.code}')">${set.name}<img class="setSymbol" src="${set.icon_svg_uri}" /></button>
+      `
+    })
+    setListContainer.innerHTML = setList;
+  })
 }
 
 window.onscroll = function(event) {
