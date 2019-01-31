@@ -181,8 +181,18 @@ window.onload = function(event) {
   getSetList().then( sets => {
     console.log(sets);
     let setList = '';
+    let setYear = 0;
     sets.forEach( set => {
-      // currentSetYear = parseInt(set.released_at.substring(0, 4));
+      currentSetYear = parseInt(set.released_at.substring(0, 4));
+
+      if (currentSetYear !== setYear) {
+        setList += `
+          <div class ="year">${currentSetYear}</div>
+          <button class="set" onclick="loadSet('${set.code}')">${set.name}<img class="setSymbol" src="${set.icon_svg_uri}" /></button>
+        `
+        setYear = currentSetYear;
+      }
+
       setList += `
         <button class="set" onclick="loadSet('${set.code}')">${set.name}<img class="setSymbol" src="${set.icon_svg_uri}" /></button>
       `
