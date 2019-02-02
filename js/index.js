@@ -4,11 +4,11 @@ let cardContainer = document.getElementById('cardContainer');
 let inputField = document.getElementById('input');
 let setListContainer = document.getElementById('setList');
 let loadMoreCards = document.getElementById('loadMore');
+let downArrow = document.getElementById('arrow');
 
 let searchString = '';
 let previousSearchString = '';
 let moreCards = false;
-
 
 
 function cardSearch(event) {
@@ -139,11 +139,13 @@ function getSetList() {
 
 function loadSet(setCode) {
   console.log(setCode);
+  inputField.value = '';
+  loadMoreCards.innerHTML = '';
   window.scrollTo(0, 0);
   cardContainer.innerHTML = "Loading...";
   fetch('https://api.scryfall.com/sets/' + setCode)
     .then(res => {
-      return res.json()
+      return res.json();
     })
     .then(json => {
       console.log(json);
@@ -176,10 +178,18 @@ function buildCardList(json) {
   }
 }
 
+function gotoSetList() {
+  let spacer = document.getElementById('spacer');
+  spacer.style.display = 'block';
+  // spacer.style.marginBottom = '120px';
+  spacer.scrollIntoView();
+  // spacer.style.display = 'none';
+}
+
 window.onload = function(event) {
   console.log('hello world');
   getSetList().then( sets => {
-    console.log(sets);
+    // console.log(sets);
     let setList = '';
     let setYear = 0;
     sets.forEach( set => {
@@ -204,5 +214,17 @@ window.onload = function(event) {
 window.onscroll = function(event) {
   if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 2) {
     console.log('bottom of page!');
+  }
+
+  let setBounding = setListContainer.getBoundingClientRect();
+  console.log(setBounding.y);
+}
+
+document.onkeypress = function(event) {
+  if (event.key === 's' && inputField !== document.activeElement) {
+    gotoSetList();
+  }
+  if (event.key == 'w' && inputField !== document.activeElement) {
+    window.scrollTo(0, 0);
   }
 }

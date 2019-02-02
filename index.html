@@ -19,9 +19,10 @@
     <div id="searchContainer">
         <input type="text" id="input" onkeyup="cardSearch(event)" placeholder="Search for cards..">
     </div>
+    <!-- <div id="controls">hint: press s to go to set list, press w to return to top of page</div> -->
   </div>
     
-
+  
 
   <div id="siteWrap">
 
@@ -31,6 +32,9 @@
     <div class="" id="loadMore">
     </div>
 
+    <div id="spacer"></div>
+
+
     <div id="setList">
     </div>
 
@@ -38,6 +42,7 @@
 
   </div>
 
+  <div onclick="gotoSetList()" id="arrow"> <!--back to set selection --> <span style="font-size:35px">&darr;</span></div>
 
   <script src = "js/index.js" ></script>
 </body>
