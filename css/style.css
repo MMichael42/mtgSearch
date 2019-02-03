@@ -57,7 +57,7 @@ button {
   width: 100%;
   height: auto;
   margin: auto;
-  margin-top: 100px;
+  margin-top: 115px;
 }
 
 #searchHeader {
@@ -94,6 +94,7 @@ button {
   font-size: 30px;
   margin-top: 10px;
   border: 0px solid red;
+  cursor: pointer;
 }
 
 #logo {
