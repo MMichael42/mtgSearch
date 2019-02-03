@@ -12,7 +12,7 @@ let moreCards = false;
 
 
 function cardSearch(event) {
-  console.log(event.key);
+  // console.log(event.key);
   searchString = document.getElementById('input').value;
 
   if (event.key == 'Enter' && searchString.length > 0 && previousSearchString != searchString) {
@@ -43,7 +43,7 @@ function searchMagic(searchString, APIendpoint) {
     })
     .then(json => {
       console.log(APIendpoint + searchString);
-      console.log(json);
+      // console.log(json);
       cardContainer.innerHTML = '';
 
       if (json.code == 'not_found') {
@@ -165,8 +165,9 @@ function getSetJson(url) {
 
 function buildCardList(json) {
   cardContainer.innerHTML = '';
+  let cardArr = json.data;
 
-  json.data.forEach(card => {
+  cardArr.forEach(card => {
     let ele = getCardHTML(card);
     cardContainer.innerHTML += ele;
   })
@@ -201,11 +202,13 @@ window.onload = function(event) {
           <button class="set" onclick="loadSet('${set.code}')">${set.name}<img class="setSymbol" src="${set.icon_svg_uri}" /></button>
         `
         setYear = currentSetYear;
+      } else {
+        setList += `
+          <button class="set" onclick="loadSet('${set.code}')">${set.name}<img class="setSymbol" src="${set.icon_svg_uri}" /></button>
+        `
       }
 
-      setList += `
-        <button class="set" onclick="loadSet('${set.code}')">${set.name}<img class="setSymbol" src="${set.icon_svg_uri}" /></button>
-      `
+      
     })
     setListContainer.innerHTML = setList;
   })
@@ -217,7 +220,7 @@ window.onscroll = function(event) {
   }
 
   let setBounding = setListContainer.getBoundingClientRect();
-  console.log(setBounding.y);
+  // console.log(setBounding.y);
 }
 
 document.onkeypress = function(event) {

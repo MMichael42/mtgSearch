@@ -130,7 +130,7 @@ button {
   background-color: black;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: left;
   align-items: stretch;
   border: 0px solid red;
   width: 100%;
@@ -144,6 +144,7 @@ button {
   height: auto;
   flex-grow: 1;
   margin: 10px;
+  /* max-width: 400px; */
 }
 
 #loadMore {
