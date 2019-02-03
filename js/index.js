@@ -199,7 +199,12 @@ window.onresize = function(event) {
 
 window.onload = function(event) {
   console.log('hello world');
-  
+  console.log(navigator.userAgent);
+
+  if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i)) {
+    showArrow();
+  }
+
   if (window.innerWidth < 1024) {
     showArrow();
   }
