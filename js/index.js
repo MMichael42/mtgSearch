@@ -166,7 +166,7 @@ function getSetJson(url) {
 function buildCardList(json) {
   cardContainer.innerHTML = '';
   let cardArr = json.data;
-
+  console.log(cardArr);
   cardArr.forEach(card => {
     let ele = getCardHTML(card);
     cardContainer.innerHTML += ele;
@@ -187,8 +187,23 @@ function gotoSetList() {
   // spacer.style.display = 'none';
 }
 
+function showArrow() {
+  downArrow.style.display = 'block';
+}
+
+window.onresize = function(event) {
+  if (window.innerWidth < 1024) {
+    showArrow();
+  }
+}
+
 window.onload = function(event) {
   console.log('hello world');
+  
+  if (window.innerWidth < 1024) {
+    showArrow();
+  }
+
   getSetList().then( sets => {
     // console.log(sets);
     let setList = '';
