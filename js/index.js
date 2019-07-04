@@ -214,7 +214,7 @@ window.onload = function(event) {
     let setList = '';
     let setYear = 0;
     sets.forEach( set => {
-      currentSetYear = parseInt(set.released_at.substring(0, 4));
+      let currentSetYear = parseInt(set.released_at.substring(0, 4));
 
       if (currentSetYear !== setYear) {
         setList += `
