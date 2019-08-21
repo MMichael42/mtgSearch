@@ -12,8 +12,7 @@ let moreCards = false;
 
 
 function cardSearch(event) {
-  // console.log(event.key);
-  searchString = document.getElementById('input').value;
+  searchString = inputField.value;
 
   if (event.key == 'Enter' && searchString.length > 0 && previousSearchString != searchString) {
     previousSearchString = searchString;
@@ -43,7 +42,6 @@ function searchMagic(searchString, APIendpoint) {
     })
     .then(json => {
       console.log(APIendpoint + searchString);
-      // console.log(json);
       cardContainer.innerHTML = '';
 
       if (json.code == 'not_found') {
@@ -65,6 +63,22 @@ function searchMagic(searchString, APIendpoint) {
     }).catch(err => {
       console.log(err);
     });
+}
+
+function buildCardList(json) {
+  cardContainer.innerHTML = '';
+  let cardArr = json.data;
+
+  cardArr.forEach(card => {
+    let ele = getCardHTML(card);
+    cardContainer.innerHTML += ele;
+  });
+
+  if (json.has_more) {
+    loadMoreCards.innerHTML = createLoadMoreButton(json);
+  } else {
+    loadMoreCards.innerHTML = '';
+  }
 }
 
 function getCardHTML(cardData) {
@@ -92,8 +106,11 @@ function getCardHTML(cardData) {
       </div>
       `
   }
-  
   return cardHTML;
+}
+
+function createLoadMoreButton(jsonData) {
+  return `<button id="loadButton" onclick="loadMoreCardsFunc('${jsonData.next_page}')">Load more cards</button>`
 }
 
 function loadMoreCardsFunc(nextPageString) {
@@ -120,18 +137,13 @@ function loadMoreCardsFunc(nextPageString) {
     }); 
 }
 
-function createLoadMoreButton(jsonData) {
-  return `<button id="loadButton" onclick="loadMoreCardsFunc('${jsonData.next_page}')">Load more cards</button>`
-}
-
 function getSetList() {
   return fetch('https://api.scryfall.com/sets')
     .then(res => {
       return res.json()
     })
     .then(json => {
-      // console.log(json.data);
-      return json.data.reverse();
+      return json.data;
     }).catch(err => {
       console.log(err);
     });
@@ -163,21 +175,7 @@ function getSetJson(url) {
     });
 }
 
-function buildCardList(json) {
-  cardContainer.innerHTML = '';
-  let cardArr = json.data;
-  console.log(cardArr);
-  cardArr.forEach(card => {
-    let ele = getCardHTML(card);
-    cardContainer.innerHTML += ele;
-  })
 
-  if (json.has_more) {
-    loadMoreCards.innerHTML = createLoadMoreButton(json);
-  } else {
-    loadMoreCards.innerHTML = '';
-  }
-}
 
 function gotoSetList() {
   let spacer = document.getElementById('spacer');
@@ -187,32 +185,12 @@ function gotoSetList() {
   // spacer.style.display = 'none';
 }
 
-function showArrow() {
-  downArrow.style.display = 'block';
-}
-
-window.onresize = function(event) {
-  if (window.innerWidth < 1024) {
-    showArrow();
-  }
-}
-
 window.onload = function(event) {
-  console.log('hello world');
-  console.log(navigator.userAgent);
-
-  if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i)) {
-    showArrow();
-  }
-
-  if (window.innerWidth < 1024) {
-    showArrow();
-  }
-
+  // on window load, get set list to display
   getSetList().then( sets => {
-    // console.log(sets);
     let setList = '';
     let setYear = 0;
+
     sets.forEach( set => {
       let currentSetYear = parseInt(set.released_at.substring(0, 4));
 
@@ -227,20 +205,9 @@ window.onload = function(event) {
           <button class="set" onclick="loadSet('${set.code}')">${set.name}<img class="setSymbol" src="${set.icon_svg_uri}" /></button>
         `
       }
-
-      
-    })
+    });
     setListContainer.innerHTML = setList;
   })
-}
-
-window.onscroll = function(event) {
-  if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 2) {
-    console.log('bottom of page!');
-  }
-
-  let setBounding = setListContainer.getBoundingClientRect();
-  // console.log(setBounding.y);
 }
 
 document.onkeypress = function(event) {
