@@ -17,52 +17,34 @@ function cardSearch(event) {
   if (event.key == 'Enter' && searchString.length > 0 && previousSearchString != searchString) {
     previousSearchString = searchString;
     searchString = searchString.split(' ').join('%20');
+    window.scrollTo(0, 0);
     searchMagic(searchString, nameSearchUrl);
   }
 }
 
-function searchMagic(searchString, APIendpoint) {
-  window.scrollTo(0, 0);
-  console.log(searchString);
+async function searchMagic(searchString, APIendpoint) {
   cardContainer.innerText = 'Loading...';
   loadMoreCards.innerHTML = '';
 
-  fetch(APIendpoint + searchString)
-    .then(res => {
-      if (searchString != inputField.value.split(' ').join('%20')) {
-        // console.log('abort this finishing fetch operation! Input field has changed!')
-        cardContainer.innerHTML = '';
-        throw 'Error: the inputfield text changed while the fetch request was out, but before it returned';
-      } else {
-        cardContainer.innerHTML = '';
-        loadMoreCards.innerHTML = '';
-        cardContainer.innerText = 'Loading...';
-        return res.json();
-      }
-    })
-    .then(json => {
-      console.log(APIendpoint + searchString);
-      cardContainer.innerHTML = '';
+  try {
+    const result = await fetch(APIendpoint + searchString);
+    const resultJSON = await result.json();
+    cardContainer.innerHTML = '';
 
-      if (json.code == 'not_found') {
-        cardContainer.innerText = 'no cards found'
-        throw Error(json.details);
-        // return;
-      }
+    if (resultJSON.code == 'not_found') {
+      cardContainer.innerText = 'no cards found';
+      throw Error(resultJSON.details);
+    }
 
-      if (searchString != inputField.value.split(' ').join('%20')) {
-        console.log("doesnt match!");
-      }
-      
-      console.log('card loop...');
-      console.log('searchString = ' + searchString);
-      console.log('currentInput = ' + inputField.value.split(' ').join('%20'));
+    if (searchString != inputField.value.split(' ').join('%20')) {
+      throw Error('search string doesn\'t match input field');
+    }
 
-      buildCardList(json);
+    buildCardList(resultJSON);
 
-    }).catch(err => {
-      console.log(err);
-    });
+  } catch(error) {
+    console.log(error);
+  }
 }
 
 function buildCardList(json) {
@@ -113,76 +95,68 @@ function createLoadMoreButton(jsonData) {
   return `<button id="loadButton" onclick="loadMoreCardsFunc('${jsonData.next_page}')">Load more cards</button>`
 }
 
-function loadMoreCardsFunc(nextPageString) {
-  console.log('more cards load! : ' + nextPageString);
+async function loadMoreCardsFunc(nextPageString) {
   let currentCardContainer = document.getElementById('cardContainer');
-
   document.getElementById('loadButton').value = 'loading...';
 
-  fetch(nextPageString)
-    .then(res => {
-      return res.json();
-    })
-    .then(json => {
-      console.log(json);
-      json.data.forEach(card => {
-        let ele = getCardHTML(card);
-        currentCardContainer.innerHTML += ele;
-      });
-      if (json.has_more) {
-        loadMoreCards.innerHTML = createLoadMoreButton(json);
-      } else {
-        loadMoreCards.innerHTML = '';
-      }
-    }); 
-}
-
-function getSetList() {
-  return fetch('https://api.scryfall.com/sets')
-    .then(res => {
-      return res.json()
-    })
-    .then(json => {
-      return json.data;
-    }).catch(err => {
-      console.log(err);
+  try {
+    const nextPage = await fetch(nextPageString);
+    const nextPageJSON = await nextPage.json();
+    nextPageJSON.data.forEach( card => {
+      const ele = getCardHTML(card);
+      currentCardContainer.innerHTML += ele;
     });
+    if (nextPageJSON.has_more) {
+      loadMoreCards.innerHTML = createLoadMoreButton(nextPageJSON);
+    } else {
+      loadMoreCards.innerHTML = '';
+    }
+  } catch(error) {
+    console.log(error);
+  }
 }
 
-function loadSet(setCode) {
-  console.log(setCode);
+async function getSetList() {
+  try {
+    const sets = await fetch('https://api.scryfall.com/sets');
+    const setsJSON = await sets.json();
+    return setsJSON.data;
+  } catch(error) {
+    console.log(error);
+  }
+}
+
+async function loadSet(setCode) {
+  // clear the input and card div, then scroll back up to top
   inputField.value = '';
   loadMoreCards.innerHTML = '';
-  window.scrollTo(0, 0);
   cardContainer.innerHTML = "Loading...";
-  fetch('https://api.scryfall.com/sets/' + setCode)
-    .then(res => {
-      return res.json();
-    })
-    .then(json => {
-      console.log(json);
-      getSetJson(json.search_uri);
-    })
+  window.scrollTo(0, 0);
+
+  try {
+    const setInfo = await fetch('https://api.scryfall.com/sets/' + setCode);
+    const setInfoJSON = await setInfo.json();
+    const setsJSON = await getSetJson(setInfoJSON.search_uri);
+    buildCardList(setsJSON);
+  } catch(error) {
+    console.log(error);
+  }
 }
 
-function getSetJson(url) {
-  fetch(url)
-    .then(res => {
-      return res.json();
-    })
-    .then(json => {
-      buildCardList(json);
-    });
+async function getSetJson(url) {
+  try {
+    const set = await fetch(url);
+    const setJSON = await set.json();
+    return setJSON;
+  } catch(error) {
+    console.log(error)
+  }
 }
-
-
 
 function gotoSetList() {
   let spacer = document.getElementById('spacer');
   spacer.style.display = 'block';
-  // spacer.style.marginBottom = '120px';
   spacer.scrollIntoView();
-  // spacer.style.display = 'none';
 }
 
 window.onload = function(event) {
