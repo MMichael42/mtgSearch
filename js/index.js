@@ -64,25 +64,31 @@ function buildCardList(json) {
 
 function getCardHTML(cardData) {
   let cardHTML = '';
-  // let cardObj = new Image();
 
   // checks if the current card has multiple faces, loop through them if it does
   if (cardData.image_uris == undefined && cardData.card_faces != undefined) {
 
     cardData.card_faces.forEach(card => {
+      // console.log(card);
+      const createID = card.illustration_id + Date.now();
       cardHTML +=
       `<div class="card">
           <div class="cardIMGContainer">
-            <img class="cardIMG" id="${card.id}" src="images/loading.gif" />
+            <img class="cardIMG" id="${createID}" src="images/loading.gif" />
           </div>
         </div>
       `
+
+      // if (card.illustration_id == 'b943b0d6-5e7b-46da-92df-00fd6cf173e0') {
+      //   console.log(card);
+      // }
+
       // use this image object to download the card image in the background before putting it on the page
       let downloadingImg = new Image();
       // store card info on the downloadImg object to use when the onload function is called
       downloadingImg.customData = {
         url: card.image_uris.normal,
-        cardID: card.id
+        cardID: createID
       }  
       downloadingImg.onload = function() {
         document.getElementById(this.customData.cardID).src = this.customData.url;
@@ -91,18 +97,19 @@ function getCardHTML(cardData) {
     });
   // get cards with only one face
   } else {
+    const createID = cardData.id + Date.now();
     cardHTML = 
       `<div class="card">
         <div class="cardIMGContainer">
-          <img class="cardIMG" id="${cardData.id}" src="images/loading.gif" />
+          <img class="cardIMG" id="${createID}" src="images/loading.gif" />
         </div>
       </div>
     `
-
+    
     let downloadingImg = new Image();
     downloadingImg.customData = {
       url: cardData.image_uris.normal,
-      cardID: cardData.id
+      cardID: createID
     }
     downloadingImg.onload = function() {
       document.getElementById(this.customData.cardID).src = this.customData.url
