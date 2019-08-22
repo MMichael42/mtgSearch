@@ -1,10 +1,9 @@
 let nameSearchUrl = 'https://api.scryfall.com/cards/search?order=released&unique=prints&q=';
 
-let cardContainer = document.getElementById('cardContainer');
-let inputField = document.getElementById('input');
-let setListContainer = document.getElementById('setList');
-let loadMoreCards = document.getElementById('loadMore');
-let downArrow = document.getElementById('arrow');
+const cardContainer = document.getElementById('cardContainer');
+const inputField = document.getElementById('input');
+const setListContainer = document.getElementById('setList');
+const loadMoreCards = document.getElementById('loadMore');
 
 let searchString = '';
 let previousSearchString = '';
@@ -18,6 +17,7 @@ function cardSearch(event) {
     previousSearchString = searchString;
     searchString = searchString.split(' ').join('%20');
     window.scrollTo(0, 0);
+    console.log('search: ' + searchString);
     searchMagic(searchString, nameSearchUrl);
   }
 }
@@ -35,13 +35,13 @@ async function searchMagic(searchString, APIendpoint) {
       cardContainer.innerText = 'no cards found';
       throw Error(resultJSON.details);
     }
-
     if (searchString != inputField.value.split(' ').join('%20')) {
+      // clear out whatever cards have returned in the meantime
+      cardContainer.innerHTML = '';
       throw Error('search string doesn\'t match input field');
     }
 
     buildCardList(resultJSON);
-
   } catch(error) {
     console.log(error);
   }
@@ -49,10 +49,9 @@ async function searchMagic(searchString, APIendpoint) {
 
 function buildCardList(json) {
   cardContainer.innerHTML = '';
-  let cardArr = json.data;
 
-  cardArr.forEach(card => {
-    let ele = getCardHTML(card);
+  json.data.forEach(card => {
+    const ele = getCardHTML(card);
     cardContainer.innerHTML += ele;
   });
 
@@ -64,29 +63,51 @@ function buildCardList(json) {
 }
 
 function getCardHTML(cardData) {
-  let cardImg;
   let cardHTML = '';
-  // the below code accounts for cards that may have more than one face
+  // let cardObj = new Image();
+
+  // checks if the current card has multiple faces, loop through them if it does
   if (cardData.image_uris == undefined && cardData.card_faces != undefined) {
+
     cardData.card_faces.forEach(card => {
-      // console.log(card);
       cardHTML +=
-       `<div class="card">
+      `<div class="card">
           <div class="cardIMGContainer">
-            <img class="cardIMG" id="${card.id}" src="${card.image_uris.normal}" />
+            <img class="cardIMG" id="${card.id}" src="images/loading.gif" />
           </div>
         </div>
-       `
+      `
+      // use this image object to download the card image in the background before putting it on the page
+      let downloadingImg = new Image();
+      // store card info on the downloadImg object to use when the onload function is called
+      downloadingImg.customData = {
+        url: card.image_uris.normal,
+        cardID: card.id
+      }  
+      downloadingImg.onload = function() {
+        document.getElementById(this.customData.cardID).src = this.customData.url;
+      }
+      downloadingImg.src = card.image_uris.normal;
     });
+  // get cards with only one face
   } else {
-    cardImg = cardData.image_uris.normal;
     cardHTML = 
       `<div class="card">
         <div class="cardIMGContainer">
-          <img class="cardIMG" id="${cardData.id}" src="${cardImg}" />
+          <img class="cardIMG" id="${cardData.id}" src="images/loading.gif" />
         </div>
       </div>
-      `
+    `
+
+    let downloadingImg = new Image();
+    downloadingImg.customData = {
+      url: cardData.image_uris.normal,
+      cardID: cardData.id
+    }
+    downloadingImg.onload = function() {
+      document.getElementById(this.customData.cardID).src = this.customData.url
+    }
+    downloadingImg.src = cardData.image_uris.normal;
   }
   return cardHTML;
 }
