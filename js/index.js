@@ -1,4 +1,4 @@
-let nameSearchUrl = 'https://api.scryfall.com/cards/search?order=released&unique=prints&q=';
+const nameSearchUrl = 'https://api.scryfall.com/cards/search?order=released&unique=prints&q=';
 
 const cardContainer = document.getElementById('cardContainer');
 const inputField = document.getElementById('input');
@@ -69,19 +69,14 @@ function getCardHTML(cardData) {
   if (cardData.image_uris == undefined && cardData.card_faces != undefined) {
 
     cardData.card_faces.forEach(card => {
-      // console.log(card);
       const createID = card.illustration_id + Date.now();
       cardHTML +=
       `<div class="card">
           <div class="cardIMGContainer">
-            <img class="cardIMG" id="${createID}" src="images/loading.gif" />
+            <img class="cardIMG" id="${createID}" src="images/magicback.png" />
           </div>
         </div>
       `
-
-      // if (card.illustration_id == 'b943b0d6-5e7b-46da-92df-00fd6cf173e0') {
-      //   console.log(card);
-      // }
 
       // use this image object to download the card image in the background before putting it on the page
       let downloadingImg = new Image();
@@ -101,7 +96,7 @@ function getCardHTML(cardData) {
     cardHTML = 
       `<div class="card">
         <div class="cardIMGContainer">
-          <img class="cardIMG" id="${createID}" src="images/loading.gif" />
+          <img class="cardIMG" id="${createID}" src="images/magicback.png" />
         </div>
       </div>
     `
@@ -120,12 +115,12 @@ function getCardHTML(cardData) {
 }
 
 function createLoadMoreButton(jsonData) {
-  return `<button id="loadButton" onclick="loadMoreCardsFunc('${jsonData.next_page}')">Load more cards</button>`
+  return `<button id="loadButton" onclick="loadMoreCardsFunc('${jsonData.next_page}')">load more cards</button>`
 }
 
 async function loadMoreCardsFunc(nextPageString) {
   let currentCardContainer = document.getElementById('cardContainer');
-  document.getElementById('loadButton').value = 'loading...';
+  document.getElementById('loadButton').textContent = 'loading...';
 
   try {
     const nextPage = await fetch(nextPageString);
