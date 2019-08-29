@@ -10,7 +10,7 @@ let searchString = '';
 let previousSearchString = '';
 let moreCards = false;
 
-
+const sliderValues = [100, 200, 300, 400, 600];
 slider.style.display = 'none';
 
 
@@ -57,7 +57,8 @@ function buildCardList(json) {
 
   json.data.forEach(card => {
     const ele = getCardHTML(card);
-    cardContainer.innerHTML += ele;
+    // cardContainer.innerHTML += ele;
+    cardContainer.appendChild(ele);
   });
 
   // change card size after putting them on the page based on the slider position
@@ -125,7 +126,15 @@ function getCardHTML(cardData) {
     downloadingImg.src = cardData.image_uris.normal;
   }
 
-  return cardHTML;
+  // convert this text to an actual DOM element before returning it;
+  // create throwaway parent div
+  let wrapper = document.createElement('div');
+  // inseart that html plain text into the wrapper div
+  wrapper.innerHTML = cardHTML;
+  // extract the first child, now a real DOM node
+  const cardElement = wrapper.firstChild;
+
+  return cardElement;
 }
 
 // change this to a event handler? add the function to the button after card load
@@ -134,7 +143,7 @@ function createLoadMoreButton(jsonData) {
 }
 
 async function loadMoreCardsFunc(nextPageString) {
-  let currentCardContainer = document.getElementById('cardContainer');
+  // let currentCardContainer = document.getElementById('cardContainer');
   let loadButton = document.getElementById('loadButton')
   loadButton.textContent = 'loading...';
 
@@ -143,7 +152,9 @@ async function loadMoreCardsFunc(nextPageString) {
     const nextPageJSON = await nextPage.json();
     nextPageJSON.data.forEach( card => {
       const ele = getCardHTML(card);
-      currentCardContainer.innerHTML += ele;
+      // set this new element to the width as determined by the current slider position
+      ele.style.maxWidth = sliderValues[slider.value] + 'px'; 
+      cardContainer.appendChild(ele);
     });
 
     // change size of the new loaded in cards
