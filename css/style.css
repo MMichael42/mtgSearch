@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   background-color: rgb(54, 54, 54);
@@ -15,6 +19,38 @@ button {
   z-index: 1;
 }
 
+.slider {
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  width: 100%;
+  height: 7px;
+  background: #d3d3d3; 
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+.slider:hover {
+  opacity: 1;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  border: 0;
+  width: 30px;
+  height: 30px;
+  background: url('../images/symbol.png');
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  border: 0;
+  width: 30px; /* Set a specific slider handle width */
+  height: 350x; /* Slider handle height */
+  background: url('../images/symbol.png');
+  cursor: pointer; /* Cursor on hover */
+}
+
 .year {
   width: 100%;
   color: white;
@@ -25,11 +61,20 @@ button {
   margin-top: 10px;
 }
 
+.set {
+  width: auto;
+  height: auto;
+  flex-grow: 1;
+  margin: 10px;
+  font-size: 14px;
+  /* max-width: 400px; */
+}
+
 .setSymbol {
-  width: 30px;
+  width: 20px;
   height: auto;
   margin-left: 20px;
-  transform: translateY(7px);
+  transform: translateY(2px);
 }
 
 .card {
@@ -47,17 +92,14 @@ button {
   width: 100%;
   height: auto;
   border-radius: 15px;
-  /* box-shadow: 5px 5px 10px 2px rgb(182, 182, 182); */
 }
-
-
 
 #siteWrap {
   border: 0px solid green;
   width: 100%;
   height: auto;
   margin: auto;
-  margin-top: 115px;
+  margin-top: 225px;
 }
 
 #searchHeader {
@@ -69,8 +111,9 @@ button {
   height: auto;
   background-color: white;
   border: 0px solid red;
+  /* border-bottom: 1px solid rgb(128, 128, 128); */
   z-index: 10;
-  /* box-shadow:0px 1px 1px #d3d3d3; */
+  box-shadow:0px 2px 8px #333;
 }
 
 #arrow {
@@ -108,17 +151,25 @@ button {
   width: 98%;
   height: 60px;
   margin: auto;
-  margin-top: 20px;
+  margin-top: 0px;
 }
 
-#input {
-  box-sizing: border-box;
+#textInput {
   width: 100%;
   margin: auto;
   margin-top: 0px;
   border: 1px solid #ddd;
   font-size: 16px;
   padding: 12px 0px 12px 10px;
+}
+
+#cardSizeSlider {
+  width: 200px;
+  border: 0px solid black;
+  height: 30px;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 #cardContainer {
@@ -135,7 +186,6 @@ button {
 }
 
 #setList {
-  /* background-color: black; */
   display: flex;
   flex-wrap: wrap;
   justify-content: left;
@@ -143,16 +193,9 @@ button {
   border: 0px solid red;
   width: 100%;
   margin-top: 10px;
-  padding-top: 35px;
+  padding-top: 0px;
   padding-bottom: 100px;
-}
-.set {
-  /* border: 1px solid black; */
-  width: auto;
-  height: auto;
-  flex-grow: 1;
-  margin: 10px;
-  /* max-width: 400px; */
+  
 }
 
 #loadMore {
@@ -164,6 +207,10 @@ button {
   margin-bottom: 20px;
 }
 
+button#loadButton {
+  min-width: 178px; /* hard coding this so the button size stays the same even after text change to say 'loading...'*/
+}
+
 #spacer {
   display: none;
   border: 0px solid red;
@@ -171,15 +218,10 @@ button {
   margin-bottom: 120px;
 }
 
-@media only screen and (min-width: 500px) {
+@media only screen and (min-width: 541px) {
   .card {
-    margin: 10px;
-    max-width: 320px;
-  }
-
-  #searchHeader {
-    flex-direction: row;
-    justify-content: flex-start;
+    margin: 5px;
+    max-width: 300px;
   }
 
   #headerText {
@@ -188,8 +230,8 @@ button {
   }
 
   #searchContainer {
-    width: 30%;
-    margin-left: 0;
+    width: 50%;
+    max-width: 500px;
   }
 
   #cardContainer {
@@ -198,7 +240,6 @@ button {
   }
 
   #spacer {
-    /* margin-top: 120px; */
     margin-bottom: 60px;
   }
 }

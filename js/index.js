@@ -1,13 +1,17 @@
 const nameSearchUrl = 'https://api.scryfall.com/cards/search?order=released&unique=prints&q=';
 
 const cardContainer = document.getElementById('cardContainer');
-const inputField = document.getElementById('input');
+const inputField = document.getElementById('textInput');
 const setListContainer = document.getElementById('setList');
 const loadMoreCards = document.getElementById('loadMore');
+const slider = document.getElementById('rangeSlider');
 
 let searchString = '';
 let previousSearchString = '';
 let moreCards = false;
+
+
+slider.style.display = 'none';
 
 
 function cardSearch(event) {
@@ -49,11 +53,19 @@ async function searchMagic(searchString, APIendpoint) {
 
 function buildCardList(json) {
   cardContainer.innerHTML = '';
+  slider.style.display = 'block';
 
   json.data.forEach(card => {
     const ele = getCardHTML(card);
     cardContainer.innerHTML += ele;
   });
+
+  // change card size after putting them on the page based on the slider position
+  // const cardDivs = document.querySelectorAll('.card');
+  // changeCardSize(cardDivs);
+
+  // or just reset slider value to default when new cards list is built
+  slider.value = 2;
 
   if (json.has_more) {
     loadMoreCards.innerHTML = createLoadMoreButton(json);
@@ -62,6 +74,7 @@ function buildCardList(json) {
   }
 }
 
+// this function creates plain text, when it should ideally create an actual html element
 function getCardHTML(cardData) {
   let cardHTML = '';
 
@@ -111,16 +124,19 @@ function getCardHTML(cardData) {
     }
     downloadingImg.src = cardData.image_uris.normal;
   }
+
   return cardHTML;
 }
 
+// change this to a event handler? add the function to the button after card load
 function createLoadMoreButton(jsonData) {
   return `<button id="loadButton" onclick="loadMoreCardsFunc('${jsonData.next_page}')">load more cards</button>`
 }
 
 async function loadMoreCardsFunc(nextPageString) {
   let currentCardContainer = document.getElementById('cardContainer');
-  document.getElementById('loadButton').textContent = 'loading...';
+  let loadButton = document.getElementById('loadButton')
+  loadButton.textContent = 'loading...';
 
   try {
     const nextPage = await fetch(nextPageString);
@@ -129,6 +145,11 @@ async function loadMoreCardsFunc(nextPageString) {
       const ele = getCardHTML(card);
       currentCardContainer.innerHTML += ele;
     });
+
+    // change size of the new loaded in cards
+    // const cardDivs = document.querySelectorAll('.card');
+    // changeCardSize(cardDivs);
+
     if (nextPageJSON.has_more) {
       loadMoreCards.innerHTML = createLoadMoreButton(nextPageJSON);
     } else {
@@ -180,6 +201,61 @@ function gotoSetList() {
   let spacer = document.getElementById('spacer');
   spacer.style.display = 'block';
   spacer.scrollIntoView();
+}
+
+slider.oninput = function(event) {
+  const cardDivs = document.querySelectorAll('.card');
+  changeCardSize(cardDivs);
+}
+
+function changeCardSize(nodeList) {
+  if (!nodeList) {
+    console.log('empty node list!');
+    slider.value = 2;
+    return;
+  }
+
+  nodeList.forEach( card => {
+    let val = parseInt(slider.value);
+
+    switch (val) {
+      case 0:
+        card.style.maxWidth = "100px";
+        card.style.margin = "5px";
+        window.scrollTo(0,0);
+        break;
+      case 1:
+        card.style.maxWidth = "200px";
+        card.style.margin = "5px";
+        window.scrollTo(0,0);
+        break;
+      case 2:
+        card.style.maxWidth = "300px";
+        card.style.margin = "5px";
+        window.scrollTo(0,0);
+        break;
+      case 3:
+        card.style.maxWidth = "400px";
+        card.style.margin = "7px";
+        break;
+      case 4:
+        card.style.maxWidth = "600px";
+        card.style.margin = "7px";
+        break;
+      default:
+        break;
+    }
+  });
+}
+
+function isInViewport(element) {
+  const bounding = element.getBoundingClientRect();
+    return (
+        bounding.top >= 0 &&
+        bounding.left >= 0 &&
+        bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
 }
 
 window.onload = function(event) {
