@@ -46,7 +46,8 @@ async function searchMagic(searchString, APIendpoint) {
     }
 
     buildCardList(resultJSON);
-  } catch(error) {
+  } 
+  catch(error) {
     console.log(error);
   }
 }
@@ -57,16 +58,9 @@ function buildCardList(json) {
 
   json.data.forEach(card => {
     const ele = getCardHTML(card);
-    // cardContainer.innerHTML += ele;
+    ele.style.maxWidth = sliderValues[slider.value] + 'px'; 
     cardContainer.appendChild(ele);
   });
-
-  // change card size after putting them on the page based on the slider position
-  // const cardDivs = document.querySelectorAll('.card');
-  // changeCardSize(cardDivs);
-
-  // or just reset slider value to default when new cards list is built
-  slider.value = 2;
 
   if (json.has_more) {
     loadMoreCards.innerHTML = createLoadMoreButton(json);
@@ -75,7 +69,6 @@ function buildCardList(json) {
   }
 }
 
-// this function creates plain text, when it should ideally create an actual html element
 function getCardHTML(cardData) {
   let cardHTML = '';
 
@@ -114,7 +107,6 @@ function getCardHTML(cardData) {
         </div>
       </div>
     `
-    
     let downloadingImg = new Image();
     downloadingImg.customData = {
       url: cardData.image_uris.normal,
@@ -150,6 +142,7 @@ async function loadMoreCardsFunc(nextPageString) {
   try {
     const nextPage = await fetch(nextPageString);
     const nextPageJSON = await nextPage.json();
+
     nextPageJSON.data.forEach( card => {
       const ele = getCardHTML(card);
       // set this new element to the width as determined by the current slider position
@@ -157,16 +150,13 @@ async function loadMoreCardsFunc(nextPageString) {
       cardContainer.appendChild(ele);
     });
 
-    // change size of the new loaded in cards
-    // const cardDivs = document.querySelectorAll('.card');
-    // changeCardSize(cardDivs);
-
     if (nextPageJSON.has_more) {
       loadMoreCards.innerHTML = createLoadMoreButton(nextPageJSON);
     } else {
       loadMoreCards.innerHTML = '';
     }
-  } catch(error) {
+  } 
+  catch(error) {
     console.log(error);
   }
 }
@@ -193,7 +183,8 @@ async function loadSet(setCode) {
     const setInfoJSON = await setInfo.json();
     const setsJSON = await getSetJson(setInfoJSON.search_uri);
     buildCardList(setsJSON);
-  } catch(error) {
+  } 
+  catch(error) {
     console.log(error);
   }
 }
@@ -203,7 +194,8 @@ async function getSetJson(url) {
     const set = await fetch(url);
     const setJSON = await set.json();
     return setJSON;
-  } catch(error) {
+  } 
+  catch(error) {
     console.log(error)
   }
 }
@@ -262,10 +254,10 @@ function changeCardSize(nodeList) {
 function isInViewport(element) {
   const bounding = element.getBoundingClientRect();
     return (
-        bounding.top >= 0 &&
-        bounding.left >= 0 &&
-        bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
+      bounding.top >= 0 &&
+      bounding.left >= 0 &&
+      bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
     );
 }
 
