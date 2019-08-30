@@ -57,9 +57,12 @@ function buildCardList(json) {
   customNamespace.slider.style.display = 'block';
 
   json.data.forEach(card => {
-    const ele = getCardHTML(card);
-    ele.style.maxWidth = customNamespace.sliderValues[customNamespace.slider.value] + 'px'; 
-    customNamespace.cardContainer.appendChild(ele);
+    const elements = getCardHTML(card); // this returns HTMLCollection
+
+    for (let ele of elements) {
+      ele.style.maxWidth = customNamespace.sliderValues[customNamespace.slider.value] + 'px'; 
+      customNamespace.cardContainer.appendChild(ele);
+    }
   });
 
   if (json.has_more) {
@@ -70,20 +73,26 @@ function buildCardList(json) {
 }
 
 function getCardHTML(cardData) {
+  let eleArr = [];
   let cardHTML = '';
+  let wrapper = document.createElement('div');
 
   // checks if the current card has multiple faces, loop through them if it does
-  if (cardData.image_uris == undefined && cardData.card_faces != undefined) {
-
+  if (cardData.image_uris === undefined && cardData.card_faces !== undefined) {
+    
     cardData.card_faces.forEach(card => {
-      const createID = card.illustration_id + Date.now();
-      cardHTML +=
+      const createID = card.illustration_id + "-" + Date.now();
+      cardHTML =
       `<div class="card">
           <div class="cardIMGContainer">
             <img class="cardIMG" id="${createID}" src="images/magicback.png" />
           </div>
         </div>
       `
+
+      wrapper.innerHTML = cardHTML;
+      const ele = wrapper.firstElementChild;
+      eleArr.push(ele);
 
       // use this image object to download the card image in the background before putting it on the page
       let downloadingImg = new Image();
@@ -93,13 +102,19 @@ function getCardHTML(cardData) {
         cardID: createID
       }  
       downloadingImg.onload = function() {
-        document.getElementById(this.customData.cardID).src = this.customData.url;
+        document.getElementById(this.customData.cardID).src = this.customData.url
+        // try {
+        //   document.getElementById(this.customData.cardID).src = this.customData.url
+        // }
+        // catch(error) {
+        //   console.log(error)
+        // }
       }
       downloadingImg.src = card.image_uris.normal;
     });
-  // get cards with only one face
-  } else {
+  } else { // get cards with only one face
     const createID = cardData.id + Date.now();
+
     cardHTML = 
       `<div class="card">
         <div class="cardIMGContainer">
@@ -107,6 +122,11 @@ function getCardHTML(cardData) {
         </div>
       </div>
     `
+
+    wrapper.innerHTML = cardHTML;
+    const ele = wrapper.firstElementChild;
+    eleArr.push(ele);
+
     let downloadingImg = new Image();
     downloadingImg.customData = {
       url: cardData.image_uris.normal,
@@ -114,19 +134,18 @@ function getCardHTML(cardData) {
     }
     downloadingImg.onload = function() {
       document.getElementById(this.customData.cardID).src = this.customData.url
+      // try {
+        
+      // }
+      // catch(error) {
+      //   console.log(error)
+      // }
     }
     downloadingImg.src = cardData.image_uris.normal;
   }
 
-  // convert this text to an actual DOM element before returning it;
-  // create throwaway parent div
-  let wrapper = document.createElement('div');
-  // inseart that html plain text into the wrapper div
-  wrapper.innerHTML = cardHTML;
-  // extract the first child, now a real DOM node
-  const cardElement = wrapper.firstChild;
-
-  return cardElement;
+  // return the array of eleemnt(s)
+  return eleArr; 
 }
 
 // change this to a event handler? add the function to the button after card load
@@ -143,10 +162,12 @@ async function loadMoreCardsFunc(nextPageString) {
     const nextPageJSON = await nextPage.json();
 
     nextPageJSON.data.forEach( card => {
-      const ele = getCardHTML(card);
-      // set this new element to the width as determined by the current slider position
-      ele.style.maxWidth = customNamespace.sliderValues[slider.value] + 'px'; 
-      customNamespace.cardContainer.appendChild(ele);
+      const elements = getCardHTML(card); // returns HTMLCollection
+      for (let ele of elements) {
+        // set this new element to the width as determined by the current slider position
+        ele.style.maxWidth = customNamespace.sliderValues[customNamespace.slider.value] + 'px'; 
+        customNamespace.cardContainer.appendChild(ele);
+      }
     });
 
     if (nextPageJSON.has_more) {
