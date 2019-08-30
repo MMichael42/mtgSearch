@@ -1,47 +1,47 @@
-const nameSearchUrl = 'https://api.scryfall.com/cards/search?order=released&unique=prints&q=';
+// create custom namespace to prevent the global scope from getting polluted
+let customNamespace = {}
 
-const cardContainer = document.getElementById('cardContainer');
-const inputField = document.getElementById('textInput');
-const setListContainer = document.getElementById('setList');
-const loadMoreCards = document.getElementById('loadMore');
-const slider = document.getElementById('rangeSlider');
+customNamespace.nameSearchUrl = 'https://api.scryfall.com/cards/search?order=released&unique=prints&q=';
+customNamespace.searchString = '';
+customNamespace.previousSearchString = '';
 
-let searchString = '';
-let previousSearchString = '';
-let moreCards = false;
+customNamespace.cardContainer = document.getElementById('cardContainer');
+customNamespace.inputField = document.getElementById('textInput');
+customNamespace.setListContainer = document.getElementById('setList');
+customNamespace.loadMoreCards = document.getElementById('loadMore');
+customNamespace.slider = document.getElementById('rangeSlider');
 
-const sliderValues = [100, 200, 300, 400, 600];
-slider.style.display = 'none';
+customNamespace.sliderValues = [100, 200, 300, 400, 600];
 
 
 function cardSearch(event) {
-  searchString = inputField.value;
+  customNamespace.searchString = customNamespace.inputField.value;
 
-  if (event.key == 'Enter' && searchString.length > 0 && previousSearchString != searchString) {
-    previousSearchString = searchString;
-    searchString = searchString.split(' ').join('%20');
+  if (event.key == 'Enter' && customNamespace.searchString.length > 0 && customNamespace.previousSearchString != customNamespace.searchString) {
+    customNamespace.previousSearchString = customNamespace.searchString;
+    customNamespace.searchString = customNamespace.searchString.split(' ').join('%20');
     window.scrollTo(0, 0);
-    console.log('search: ' + searchString);
-    searchMagic(searchString, nameSearchUrl);
+
+    searchMagic(customNamespace.searchString, customNamespace.nameSearchUrl);
   }
 }
 
 async function searchMagic(searchString, APIendpoint) {
-  cardContainer.innerText = 'Loading...';
-  loadMoreCards.innerHTML = '';
+  customNamespace.cardContainer.innerText = 'Loading...';
+  customNamespace.loadMoreCards.innerHTML = '';
 
   try {
     const result = await fetch(APIendpoint + searchString);
     const resultJSON = await result.json();
-    cardContainer.innerHTML = '';
+    customNamespace.cardContainer.innerHTML = '';
 
     if (resultJSON.code == 'not_found') {
-      cardContainer.innerText = 'no cards found';
+      customNamespace.cardContainer.innerText = 'no cards found';
       throw Error(resultJSON.details);
     }
-    if (searchString != inputField.value.split(' ').join('%20')) {
+    if (searchString != customNamespace.inputField.value.split(' ').join('%20')) {
       // clear out whatever cards have returned in the meantime
-      cardContainer.innerHTML = '';
+      customNamespace.cardContainer.innerHTML = '';
       throw Error('search string doesn\'t match input field');
     }
 
@@ -53,19 +53,19 @@ async function searchMagic(searchString, APIendpoint) {
 }
 
 function buildCardList(json) {
-  cardContainer.innerHTML = '';
-  slider.style.display = 'block';
+  customNamespace.cardContainer.innerHTML = '';
+  customNamespace.slider.style.display = 'block';
 
   json.data.forEach(card => {
     const ele = getCardHTML(card);
-    ele.style.maxWidth = sliderValues[slider.value] + 'px'; 
-    cardContainer.appendChild(ele);
+    ele.style.maxWidth = customNamespace.sliderValues[customNamespace.slider.value] + 'px'; 
+    customNamespace.cardContainer.appendChild(ele);
   });
 
   if (json.has_more) {
-    loadMoreCards.innerHTML = createLoadMoreButton(json);
+    customNamespace.loadMoreCards.innerHTML = createLoadMoreButton(json);
   } else {
-    loadMoreCards.innerHTML = '';
+    customNamespace.loadMoreCards.innerHTML = '';
   }
 }
 
@@ -135,7 +135,6 @@ function createLoadMoreButton(jsonData) {
 }
 
 async function loadMoreCardsFunc(nextPageString) {
-  // let currentCardContainer = document.getElementById('cardContainer');
   let loadButton = document.getElementById('loadButton')
   loadButton.textContent = 'loading...';
 
@@ -146,14 +145,14 @@ async function loadMoreCardsFunc(nextPageString) {
     nextPageJSON.data.forEach( card => {
       const ele = getCardHTML(card);
       // set this new element to the width as determined by the current slider position
-      ele.style.maxWidth = sliderValues[slider.value] + 'px'; 
-      cardContainer.appendChild(ele);
+      ele.style.maxWidth = customNamespace.sliderValues[slider.value] + 'px'; 
+      customNamespace.cardContainer.appendChild(ele);
     });
 
     if (nextPageJSON.has_more) {
-      loadMoreCards.innerHTML = createLoadMoreButton(nextPageJSON);
+      customNamespace.loadMoreCards.innerHTML = createLoadMoreButton(nextPageJSON);
     } else {
-      loadMoreCards.innerHTML = '';
+      customNamespace.loadMoreCards.innerHTML = '';
     }
   } 
   catch(error) {
@@ -173,9 +172,9 @@ async function getSetList() {
 
 async function loadSet(setCode) {
   // clear the input and card div, then scroll back up to top
-  inputField.value = '';
-  loadMoreCards.innerHTML = '';
-  cardContainer.innerHTML = "Loading...";
+  customNamespace.inputField.value = '';
+  customNamespace.loadMoreCards.innerHTML = '';
+  customNamespace.cardContainer.innerHTML = "Loading...";
   window.scrollTo(0, 0);
 
   try {
@@ -206,7 +205,7 @@ function gotoSetList() {
   spacer.scrollIntoView();
 }
 
-slider.oninput = function(event) {
+customNamespace.slider.oninput = function(event) {
   const cardDivs = document.querySelectorAll('.card');
   changeCardSize(cardDivs);
 }
@@ -214,12 +213,12 @@ slider.oninput = function(event) {
 function changeCardSize(nodeList) {
   if (!nodeList) {
     console.log('empty node list!');
-    slider.value = 2;
+    customNamespace.slider.value = 2;
     return;
   }
 
   nodeList.forEach( card => {
-    let val = parseInt(slider.value);
+    let val = parseInt(customNamespace.slider.value);
 
     switch (val) {
       case 0:
@@ -282,15 +281,15 @@ window.onload = function(event) {
         `
       }
     });
-    setListContainer.innerHTML = setList;
+    customNamespace.setListContainer.innerHTML = setList;
   })
 }
 
 document.onkeypress = function(event) {
-  if (event.key === 's' && inputField !== document.activeElement) {
+  if (event.key === 's' && customNamespace.inputField !== document.activeElement) {
     gotoSetList();
   }
-  if (event.key == 'w' && inputField !== document.activeElement) {
+  if (event.key == 'w' && customNamespace.inputField !== document.activeElement) {
     window.scrollTo(0, 0);
   }
 }
