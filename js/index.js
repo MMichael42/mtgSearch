@@ -80,12 +80,12 @@ function getCardHTML(cardData) {
   // checks if the current card has multiple faces, loop through them if it does
   if (cardData.image_uris === undefined && cardData.card_faces !== undefined) {
     
-    cardData.card_faces.forEach(card => {
-      const createID = card.illustration_id + "-" + Date.now();
+    cardData.card_faces.forEach( card => {
+      const createdID = card.illustration_id + "-" + Date.now() + "-" + cardData.id; // use card id to avoid name collisions involving different double sided cards that share an illustration
       cardHTML =
       `<div class="card">
           <div class="cardIMGContainer">
-            <img class="cardIMG" id="${createID}" src="images/magicback.png" />
+            <img class="cardIMG" id="${createdID}" src="images/magicback.png" />
           </div>
         </div>
       `
@@ -99,26 +99,20 @@ function getCardHTML(cardData) {
       // store card info on the downloadImg object to use when the onload function is called
       downloadingImg.customData = {
         url: card.image_uris.normal,
-        cardID: createID
+        cardID: createdID
       }  
       downloadingImg.onload = function() {
         document.getElementById(this.customData.cardID).src = this.customData.url
-        // try {
-        //   document.getElementById(this.customData.cardID).src = this.customData.url
-        // }
-        // catch(error) {
-        //   console.log(error)
-        // }
       }
       downloadingImg.src = card.image_uris.normal;
     });
   } else { // get cards with only one face
-    const createID = cardData.id + Date.now();
+    const createdID = cardData.id + Date.now();
 
     cardHTML = 
       `<div class="card">
         <div class="cardIMGContainer">
-          <img class="cardIMG" id="${createID}" src="images/magicback.png" />
+          <img class="cardIMG" id="${createdID}" src="images/magicback.png" />
         </div>
       </div>
     `
@@ -130,21 +124,15 @@ function getCardHTML(cardData) {
     let downloadingImg = new Image();
     downloadingImg.customData = {
       url: cardData.image_uris.normal,
-      cardID: createID
+      cardID: createdID
     }
     downloadingImg.onload = function() {
       document.getElementById(this.customData.cardID).src = this.customData.url
-      // try {
-        
-      // }
-      // catch(error) {
-      //   console.log(error)
-      // }
     }
     downloadingImg.src = cardData.image_uris.normal;
   }
 
-  // return the array of eleemnt(s)
+  // return the array of element(s)
   return eleArr; 
 }
 
