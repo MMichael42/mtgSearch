@@ -20,8 +20,10 @@ function cardSearch(event) {
   if (event.key == 'Enter' && customNamespace.searchString.length > 0 && customNamespace.previousSearchString != customNamespace.searchString) {
     customNamespace.previousSearchString = customNamespace.searchString;
     customNamespace.searchString = customNamespace.searchString.split(' ').join('%20');
+    // remove focus from text input so mobile keyboard hides
+    customNamespace.inputField.blur();
     window.scrollTo(0, 0);
-
+  
     searchMagic(customNamespace.searchString, customNamespace.nameSearchUrl);
   }
 }
