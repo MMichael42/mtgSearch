@@ -13,7 +13,6 @@ customNamespace.slider = document.getElementById('rangeSlider');
 
 customNamespace.sliderValues = [100, 200, 300, 400, 600];
 
-
 function cardSearch(event) {
   customNamespace.searchString = customNamespace.inputField.value;
 
@@ -192,10 +191,16 @@ async function loadSet(setCode) {
     const setInfo = await fetch('https://api.scryfall.com/sets/' + setCode);
     const setInfoJSON = await setInfo.json();
     const setsJSON = await getSetJson(setInfoJSON.search_uri);
-    buildCardList(setsJSON);
+
+    if (setsJSON.status === 404) {
+      throw new Error("404: Set failed to load from the server");
+    } else {
+      buildCardList(setsJSON);
+    }
   } 
   catch(error) {
     console.log(error);
+    customNamespace.cardContainer.innerText = error;
   }
 }
 
@@ -259,16 +264,6 @@ function changeCardSize(nodeList) {
         break;
     }
   });
-}
-
-function isInViewport(element) {
-  const bounding = element.getBoundingClientRect();
-    return (
-      bounding.top >= 0 &&
-      bounding.left >= 0 &&
-      bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-      bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
 }
 
 window.onload = function(event) {
