@@ -58,7 +58,8 @@ function buildCardList(json) {
   customNamespace.slider.style.display = 'block';
 
   json.data.forEach(card => {
-    const elements = getCardHTML(card); // this returns HTMLCollection
+    // this returns HTMLCollection
+    const elements = getCardHTML(card); 
 
     for (let ele of elements) {
       ele.style.maxWidth = customNamespace.sliderValues[customNamespace.slider.value] + 'px'; 
@@ -76,13 +77,14 @@ function buildCardList(json) {
 function getCardHTML(cardData) {
   let eleArr = [];
   let cardHTML = '';
-  let wrapper = document.createElement('div');
+  
 
   // checks if the current card has multiple faces, loop through them if it does
   if (cardData.image_uris === undefined && cardData.card_faces !== undefined) {
     
     cardData.card_faces.forEach( card => {
-      const createdID = card.illustration_id + "-" + Date.now() + "-" + cardData.id; // use card id to avoid name collisions involving different double sided cards that share an illustration
+      // use card id to avoid name collisions involving different double sided cards that share an illustration
+      const createdID = card.illustration_id + "-" + Date.now() + "-" + cardData.id; 
       cardHTML =
       `<div class="card">
           <div class="cardIMGContainer">
@@ -91,6 +93,8 @@ function getCardHTML(cardData) {
         </div>
       `
 
+      // put the above text into a div so we can extract it as a dom element, making it easier to alter the properties
+      let wrapper = document.createElement('div');
       wrapper.innerHTML = cardHTML;
       const ele = wrapper.firstElementChild;
       eleArr.push(ele);
@@ -118,6 +122,8 @@ function getCardHTML(cardData) {
       </div>
     `
 
+    // put the above text into a div so we can extract it as a dom element, making it easier to alter the properties
+    let wrapper = document.createElement('div');
     wrapper.innerHTML = cardHTML;
     const ele = wrapper.firstElementChild;
     eleArr.push(ele);
@@ -151,7 +157,8 @@ async function loadMoreCardsFunc(nextPageString) {
     const nextPageJSON = await nextPage.json();
 
     nextPageJSON.data.forEach( card => {
-      const elements = getCardHTML(card); // returns HTMLCollection
+      // returns HTMLCollection
+      const elements = getCardHTML(card); 
       for (let ele of elements) {
         // set this new element to the width as determined by the current slider position
         ele.style.maxWidth = customNamespace.sliderValues[customNamespace.slider.value] + 'px'; 
@@ -234,9 +241,9 @@ function changeCardSize(nodeList) {
   }
 
   nodeList.forEach( card => {
-    let val = parseInt(customNamespace.slider.value);
+    let sliderValue = parseInt(customNamespace.slider.value);
 
-    switch (val) {
+    switch (sliderValue) {
       case 0:
         card.style.maxWidth = "100px";
         card.style.margin = "5px";
@@ -266,15 +273,16 @@ function changeCardSize(nodeList) {
   });
 }
 
-window.onload = function(event) {
+window.onload = async function(event) {
   // on window load, get set list to display
-  getSetList().then( sets => {
-    let setList = '';
-    let setYear = 0;
-
-    sets.forEach( set => {
+  let setList = '';
+  let setYear = '';
+  
+  try {
+    const setsArr = await getSetList();
+    setsArr.forEach( set => {
       let currentSetYear = parseInt(set.released_at.substring(0, 4));
-
+  
       if (currentSetYear !== setYear) {
         setList += `
           <div class ="year">${currentSetYear}</div>
@@ -288,7 +296,11 @@ window.onload = function(event) {
       }
     });
     customNamespace.setListContainer.innerHTML = setList;
-  })
+  }
+  catch(error) {
+    console.log(error)
+    console.log('set error on window load');
+  }
 }
 
 document.onkeypress = function(event) {
